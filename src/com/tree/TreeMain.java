@@ -182,9 +182,6 @@ public class TreeMain extends ApplicationWindow {
 			}
 		});
 		
-		
-		
-		
 		return container;
 	}
 	
