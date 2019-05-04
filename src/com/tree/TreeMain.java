@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import com.tree.bst.BSTCoordinate;
 import com.tree.bst.BSTCoordinate.Node;
+import com.tree.rbt.RBTCoordinate;
+import com.tree.util.TreeType;
 
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -40,8 +42,15 @@ public class TreeMain extends ApplicationWindow {
 	private GC gc = null;
 	private int screenWidth = 0;
 	private int screenHeight = 0;
-	List<List<BSTCoordinate<Integer, String>.Node>> ll = null;
-	int h = 0;
+	
+	List<List<BSTCoordinate<Integer, String>.Node>> bstll = null;
+	
+	List<List<RBTCoordinate<Integer, String>.Node>> rbtll = null;
+	
+	int bsth = 0;
+	
+	int rbth = 0;
+	
 	private int startX = 40;
 	private int startY = 40;
 	private int labelW = 20;
@@ -50,6 +59,9 @@ public class TreeMain extends ApplicationWindow {
 	private int lableOffsetY = 40;
 	List<Integer> arr = new ArrayList<>();
 	BSTCoordinate<Integer, String> bst = new BSTCoordinate<>();
+	RBTCoordinate<Integer, String> rbt = new RBTCoordinate<>();
+	//  1  bst    2  rbt
+	private int treeType = 0;
 
 	/**
 	 * Create the application window.
@@ -74,32 +86,58 @@ public class TreeMain extends ApplicationWindow {
 		
 		//初始化
 		initArrText = new Text(container, SWT.BORDER);
-		initArrText.setBounds(1603, 47, 274, 23);
+		initArrText.setBounds(1603, 76, 274, 23);
 		initArrText.setText("8,6,10,5,7,1,4,9,12");
 		
 		initArrButton = new Button(container, SWT.NONE);
-		initArrButton.setBounds(1517, 45, 80, 27);
+		initArrButton.setBounds(1517, 74, 80, 27);
 		initArrButton.setText("初始化");
 		
 		//插入节点
 		insertText = new Text(container, SWT.BORDER);
-		insertText.setBounds(1603, 87, 274, 23);
+		insertText.setBounds(1603, 123, 274, 23);
 		
 		insertButton = new Button(container, SWT.NONE);
-		insertButton.setBounds(1517, 85, 80, 27);
+		insertButton.setBounds(1517, 121, 80, 27);
 		insertButton.setText("插入");
 		
 		//删除节点
 		deleteButton = new Button(container, SWT.NONE);
-		deleteButton.setBounds(1517, 130, 80, 27);
+		deleteButton.setBounds(1517, 167, 80, 27);
 		deleteButton.setText("删除");
 		
 		deleteText = new Text(container, SWT.BORDER);
-		deleteText.setBounds(1603, 132, 274, 23);
+		deleteText.setBounds(1603, 169, 274, 23);
 		
 		//用来作为节点以及链接的容器
 		group = new Group(container, SWT.NONE);
 		group.setBounds(10, 10, 1489, 939);
+		
+		Button treeTypebutton = new Button(container, SWT.NONE);
+		treeTypebutton.setBounds(1517, 25, 80, 27);
+		treeTypebutton.setText("类型");
+		
+		Button bstButton = new Button(container, SWT.RADIO);
+		bstButton.setBounds(1619, 30, 97, 17);
+		bstButton.setText("二叉排序树");
+		bstButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//System.out.println("bst");
+				treeType = TreeType.BST;
+			}
+		});
+		
+		Button rbtButton = new Button(container, SWT.RADIO);
+		rbtButton.setBounds(1746, 30, 97, 17);
+		rbtButton.setText("红黑树");
+		rbtButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//System.out.println("rbt");
+				treeType = TreeType.RBT;
+			}
+		});
 		
 		initArrButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -108,23 +146,37 @@ public class TreeMain extends ApplicationWindow {
 				group.redraw();
 				//清除前一次绘制的label组件
 				clearComposite(group);
-				arr.clear();
-				bst.clear();
+				arr.clear();				
 				//初始化arr数组
 				String text = initArrText.getText();
 				String[] ss = text.split(",");
 				for(String s : ss){
 					arr.add(Integer.parseInt(s));
 				}					
-				System.out.println(arr);
-				//初始化BST
-				for(int i=0; i<arr.size(); i++){
-					bst.put(arr.get(i), String.valueOf(i));	
+				System.out.println("init arr = " + arr);
+				System.out.println("treeType = " + treeType);
+				
+				if(treeType == TreeType.BST){
+					//初始化BST
+					bst.clear();
+					for(int i=0; i<arr.size(); i++){
+						bst.put(arr.get(i), String.valueOf(i));	
+					}
+					//绘制节点以及链接
+					showBSTNode(group);				
+					showBSTLink(group);
 				}
-				//bst.printBinaryTree2();
-				//绘制节点以及链接
-				showNode(group);				
-				showLink(group);
+				
+				if(treeType == TreeType.RBT){
+					//初始化RBT
+					rbt.clear();
+					for(int i=0; i<arr.size(); i++){
+						rbt.put(arr.get(i), String.valueOf(i));	
+					}
+					//绘制节点以及链接
+					showRBTNode(group);				
+					showRBTLink(group);
+				}
 				
 			}
 		});
@@ -136,22 +188,30 @@ public class TreeMain extends ApplicationWindow {
 				group.redraw();
 				//清除前一次绘制的label组件
 				clearComposite(group);
-				//arr.clear();
-				//bst.clear();
 				//获取要添加的节点
 				String text = insertText.getText();
 				String[] ss = text.split(",");
-				for(String s : ss){
-					arr.add(Integer.parseInt(s));
-					bst.put(Integer.parseInt(s), s);
-				}					
-				System.out.println(arr);
 				
-				//bst.printBinaryTree2();
-				//绘制节点以及链接
-				showNode(group);				
-				showLink(group);
+				if(treeType == TreeType.BST){
+					for(String s : ss){
+						arr.add(Integer.parseInt(s));
+						bst.put(Integer.parseInt(s), s);
+					}
+					//绘制节点以及链接
+					showBSTNode(group);				
+					showBSTLink(group);
+				}
 				
+				if(treeType == TreeType.RBT){
+					for(String s : ss){
+						arr.add(Integer.parseInt(s));
+						rbt.put(Integer.parseInt(s), s);
+					}
+					//绘制节点以及链接
+					showRBTNode(group);				
+					showRBTLink(group);
+				}												
+				System.out.println("insert = " + arr);		
 			}
 		});
 		
@@ -162,23 +222,31 @@ public class TreeMain extends ApplicationWindow {
 				group.redraw();
 				//清除前一次绘制的label组件
 				clearComposite(group);
-				//arr.clear();
-				//bst.clear();
 				//获取要删除的节点key集合
 				String text = deleteText.getText();
 				String[] ss = text.split(",");
-				for(String s : ss){
-					System.out.println(s);
-					arr.remove(Integer.parseInt(s));
-					bst.delete(Integer.parseInt(s));
-				}					
-				System.out.println(arr);
 				
-				//bst.printBinaryTree2();
-				//绘制节点以及链接
-				showNode(group);				
-				showLink(group);
+				if(treeType == TreeType.BST){
+					for(String s : ss){
+						arr.remove((Object)Integer.parseInt(s));
+						bst.delete(Integer.parseInt(s));
+					}
+					//绘制节点以及链接
+					showBSTNode(group);				
+					showBSTLink(group);
+				}
 				
+				if(treeType == TreeType.RBT){
+					for(String s : ss){
+						//List  remove(index)  remove(Object)方法的调用区别
+						arr.remove((Object)Integer.parseInt(s));
+						rbt.delete(Integer.parseInt(s));
+					}
+					//绘制节点以及链接
+					showRBTNode(group);				
+					showRBTLink(group);
+				}												
+				System.out.println("delete arr = " + arr);
 			}
 		});
 		
@@ -271,57 +339,106 @@ public class TreeMain extends ApplicationWindow {
 		}
 	}
 	
-	private int getNodeLabelStartX(Node n){
-		return startX + n.getX() * lableOffsetX;
+	private int getNodeLabelStartX(int x){
+		return startX + x * lableOffsetX;
 	}
 	
-	private int getNodeLableStartY(Node n){
-		return startY + n.getY() * lableOffsetY;
+	private int getNodeLableStartY(int y){
+		return startY + y * lableOffsetY;
 	}
 	
-	private void showNode(Group group){
-		ll = bst.calculateNodeCoordinate2();
-		h = bst.height();
+	private void showBSTNode(Group group){
+		bstll = bst.calculateNodeCoordinate2();
+		bsth = bst.height();
 		//绘制节点
-		for(int i=1; i<=h; i++){
-			for(int j=0; j<ll.get(i-1).size(); j++){	
-				Node nc = ll.get(i-1).get(j);
-				if(nc.getKey().equals(BSTCoordinate.specialChar))
+		for(int i=1; i<=bsth; i++){
+			for(int j=0; j<bstll.get(i-1).size(); j++){	
+				Node nc = bstll.get(i-1).get(j);
+				if(String.valueOf(nc.key).equals(BSTCoordinate.specialChar))
 					continue;
 				Label lname = new Label(group, SWT.NONE|SWT.CENTER);				
-				lname.setBounds(getNodeLabelStartX(nc), getNodeLableStartY(nc), labelW, labelH);
-				lname.setText(String.valueOf(nc.getKey()));
+				lname.setBounds(getNodeLabelStartX(nc.x), getNodeLableStartY(nc.y), labelW, labelH);
+				lname.setText(String.valueOf(nc.key));
 				//System.out.println("i = " + i + " x = " + nc.getX() + " y = " + nc.getY());
 			}
 		}
 	}
 	
-	private void showLink(Group group){
-	  //group.redraw();
-	    //绘制连接	
+	private void showRBTNode(Group group){
+		rbtll = rbt.calculateNodeCoordinate2();
+		rbth = rbt.height();
+		//绘制节点
+		for(int i=1; i<=rbth; i++){
+			for(int j=0; j<rbtll.get(i-1).size(); j++){	
+				RBTCoordinate<Integer, String>.Node nc = rbtll.get(i-1).get(j);
+				if(String.valueOf(nc.key).equals(RBTCoordinate.specialChar))
+					continue;
+				Label lname = new Label(group, SWT.NONE|SWT.CENTER);
+				lname.setBounds(getNodeLabelStartX(nc.x), getNodeLableStartY(nc.y), labelW, labelH);
+				lname.setText(String.valueOf(nc.key));
+				//System.out.println("i = " + i + " x = " + nc.getX() + " y = " + nc.getY());
+			}
+		}
+	}
+	
+	private void showBSTLink(Group group){
+	  //绘制连接	
 	  gc = new GC(group);
 	  gc.setLineWidth(1);
-	  for(int i=1; i<=h; i++){
-			for(int j=0; j<ll.get(i-1).size(); j++){			
-				Node nc = ll.get(i-1).get(j);
-				
-				if(nc.getLeft()!=null)
+	  for(int i=1; i<=bsth; i++){
+			for(int j=0; j<bstll.get(i-1).size(); j++){			
+				Node nc = bstll.get(i-1).get(j);				
+				if(nc.left != null) {
 					gc.drawLine(
-							getNodeLabelStartX(nc)+labelW/2,
-							getNodeLableStartY(nc)+labelH,
-							getNodeLabelStartX(nc.getLeft())+labelW/2,
-							getNodeLableStartY(nc.getLeft())
+							getNodeLabelStartX(nc.x) + labelW / 2,
+							getNodeLableStartY(nc.y) + labelH,
+							getNodeLabelStartX(nc.left.x) + labelW / 2,
+							getNodeLableStartY(nc.left.y)
 							);
-				if(nc.getRight()!=null)
+				}					
+				if(nc.right != null) {
 					gc.drawLine(
-							getNodeLabelStartX(nc)+labelW/2,
-							getNodeLableStartY(nc)+labelH,
-							getNodeLabelStartX(nc.getRight())+labelW/2,
-							getNodeLableStartY(nc.getRight())
-							);
-				
+							getNodeLabelStartX(nc.x)+labelW/2,
+							getNodeLableStartY(nc.y)+labelH,
+							getNodeLabelStartX(nc.right.x)+labelW/2,
+							getNodeLableStartY(nc.right.y)
+							);	
+				}							
 			}
 		}//end for 
 	}
+	
+	private void showRBTLink(Group group) {
+		// group.redraw();
+		// 绘制连接
+		gc = new GC(group);
+		gc.setLineWidth(2);
+		for (int i = 1; i <= rbth; i++) {
+			for (int j = 0; j < rbtll.get(i - 1).size(); j++) {
+				RBTCoordinate<Integer, String>.Node nc = rbtll.get(i - 1).get(j);
+				if (nc.left != null) {
+					setGCColorByNode(nc.left);
+					gc.drawLine(getNodeLabelStartX(nc.x) + labelW / 2, 
+							getNodeLableStartY(nc.y) + labelH,
+							getNodeLabelStartX(nc.left.x) + labelW / 2,
+							getNodeLableStartY(nc.left.y));
+				}
+				if (nc.right != null) {
+					setGCColorByNode(nc.right);
+					gc.drawLine(getNodeLabelStartX(nc.x) + labelW / 2, 
+							getNodeLableStartY(nc.y) + labelH,
+							getNodeLabelStartX(nc.right.x) + labelW / 2,
+							getNodeLableStartY(nc.right.y));
 
+				}
+			} // end for
+		}
+	}
+	
+	private void setGCColorByNode(RBTCoordinate<Integer, String>.Node nc){
+		 if(nc.color)
+			 gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+		 else
+			 gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+	}
 }

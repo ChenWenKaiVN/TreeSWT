@@ -5,54 +5,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-//二叉查找�?
+//二叉查找树BST
 public class BST<Key extends Comparable<Key>, Value> {
 	
 	public class Node{
-		private Key key;
-		private Value value;
-		private Node left, right;
-		private int N;		
+		Key key;
+		Value value;
+		Node left, right;
+		int N;		
 		public Node(Key key, Value value, int N){
 			this.key = key;
 			this.value = value;
 			this.N = N;
-		}
-		public Key getKey(){
-			return this.key;
-		}
-		public Node getLeft(){
-			return this.left;
-		}
-		public Node getRight(){
-			return this.right;
-		}
-		@Override
-		public String toString() {
-			return "Node [key=" + key + "]";
-		}
-	}
-	
-	//带坐标的节点
-	public class NodeCoordinate{
-		Node node;
-		int x;
-		int y;
-		public NodeCoordinate(Node n, int x, int y){
-			this.node = n;
-			this.x = x;
-			this.y = y;
-		}
-		public Node getNode(){
-			return this.node;
-		}
-		
-		public int getX(){
-			return this.x;
-		}
-		
-		public int getY(){
-			return this.y;
 		}
 	}
 	
@@ -124,7 +88,7 @@ public class BST<Key extends Comparable<Key>, Value> {
 		return min(x.left);
 	}
 	
-	//小于等于key的最大�??
+	//小于等于key的最大值
 	public Node floor(Key key){
 		if(root == null) 
 			return null;
@@ -144,7 +108,7 @@ public class BST<Key extends Comparable<Key>, Value> {
 		else return x;						
 	}
 	
-	//大于等于key的最小�??
+	//大于等于key的最小值
 	public Node ceiling(Key key){
 		if(root==null) return null;
 		return ceiling(root, key);
@@ -160,7 +124,7 @@ public class BST<Key extends Comparable<Key>, Value> {
 		else return x;
 	}
 	
-	//查找排名为k的节�?
+	//查找排名为k的节节点
 	public Node select(int k){
 		if(root==null) return null;
 		return select(root, k);
@@ -174,7 +138,7 @@ public class BST<Key extends Comparable<Key>, Value> {
 		return select(x.right, k-1-leftnum);
 	}
 	
-	//返回该key对应的排�?
+	//返回该key对应的排名
 	public int rank(Key key){
 		if(root==null) return -1;
 		return rank(root, key);
@@ -213,7 +177,7 @@ public class BST<Key extends Comparable<Key>, Value> {
 		root = deleteMin(root);
 	}
 	
-	//�?直往左子树寻找，直到某个节点的左子树为空，将该节点的右子树指向指向该节点的左连接
+	//一直往左子树寻找，直到某个节点的左子树为空，将该节点的右子树指向指向该节点的左连接
 	private Node deleteMin(Node x){
 		if(x==null) return null;
 		if(x.left==null) return x.right;
@@ -239,7 +203,7 @@ public class BST<Key extends Comparable<Key>, Value> {
 		return keys(min().key, max().key);
 	}
 	
-	//返回给定范围内的key值集�?
+	//返回给定范围内的key值集合
 	public Iterable<Key> keys(Key lo, Key hi){
 		Queue<Key> q = new LinkedList<>();
 		keys(root, q, lo, hi);
@@ -257,47 +221,7 @@ public class BST<Key extends Comparable<Key>, Value> {
 	
 	private String spaceFormat = " ";
 	private String crossFormat = "-";
-	//private String specialChar = "#";
 	private String specialChar = "#";
-	
-	public void printBinaryTree(){ 
-		List<List<Key>> ll = levelOrder();
-		List<Key> l = null;
-		int h = height();				
-		for(int i=1; i<=h; i++){
-			//节点�?  �?始地�?
-			int lineStart = pow2(h-i+1)-2;
-			//每个节点的偏移地�?
-			int offset = pow2(h-i+2)-1;
-			//该节点的左右节点的长度�??
-			int brackets = pow2(h-i);
-			//System.out.println("linenum = " + i + " start = " + lineStart + " offset = " + offset + " brackets = " + brackets);
-			printFormat(lineStart, spaceFormat);
-			l = ll.get(i-1);
-			for(int j=0; j<l.size(); j++){
-				//if(!l.get(j).equals("#")){
-					System.out.print(l.get(j));
-				//}	
-				printFormat(offset, spaceFormat);		
-			}
-			//�?后一行不�?要绘�?
-			if(i>=h)
-				break;
-			System.out.println();
-			//横线部分行开始地�?
-			int lineCrossStart = pow2(h-i)-2;
-			printFormat(lineCrossStart, spaceFormat);
-			for(int j=0; j<l.size(); j++){
-				if(!l.get(j).equals(specialChar)){
-					//每个元素下一行横线部分长�?
-					printFormat(brackets*2+1, crossFormat);
-					//横线部分 间隔  即下�?行的节点的间�?
-					printFormat(pow2(h-i+2-1)-1, spaceFormat);
-				}				
-			}
-			System.out.println();
-		}		
-	}
 	
 	public int pow2(int n){
 		return (int) Math.pow(2, n);
@@ -319,44 +243,6 @@ public class BST<Key extends Comparable<Key>, Value> {
 		if(x==null) return 0;
 		if(x.left==null&&x.right==null) return 1;
 		return 1+Math.max(height(x.left), height(x.right));
-	}
-	
-	public List<List<Key>> levelOrder(){
-		if(root==null) return null;
-		List<List<Key>> ll = new ArrayList<>();
-		Queue<Node> q = new LinkedList<>();
-		q.add(root);
-		int h = height();
-		int depth = 1;
-		while(q.size()>0){
-			int s = q.size();
-			//System.out.println("size = " + q.size());
-			//System.out.println("q = " + q);
-			List<Key> lk = new ArrayList<>();
-			while(s>0){
-				Node tmp = q.poll();
-				lk.add(tmp.key);
-				if(tmp.left!=null){
-					q.add(tmp.left);
-				}else{
-					q.add(new Node((Key)specialChar, (Value)specialChar, 1));
-				}
-				if(tmp.right!=null){
-					q.add(tmp.right);
-				}else{
-					q.add(new Node((Key)specialChar, (Value)specialChar, 1));
-				}
-				s--;
-			}
-			ll.add(lk);
-			if(depth>h-1)
-				break;
-			depth++;			
-		}
-		for(List<Key> t : ll){
-			System.out.println(t);
-		}
-		return ll;
 	}
 	
 	public List<List<Node>> levelOrder2(){
@@ -398,35 +284,14 @@ public class BST<Key extends Comparable<Key>, Value> {
 		return ll;
 	}
 	
-	public List<List<NodeCoordinate>> calculateNodeCoordinate(){
-		int h = height();	
-		//int ymax = 2*h-1;	
-		List<List<Node>> ll = levelOrder2(); 
-		List<List<NodeCoordinate>> llnc = new ArrayList<>();
-		for(int i=1; i<=h; i++){
-			List<NodeCoordinate> lnc = new ArrayList<>();
-			int lineStart = pow2(h-i+1)-2;
-			int offset = pow2(h-i+2);
-			int t = lineStart;
-			for(int j=0; j<ll.get(i-1).size(); j++){									
-				NodeCoordinate nc = new NodeCoordinate(ll.get(i-1).get(j), t, i);
-				lnc.add(nc);
-				t = t + offset;
-			}
-			llnc.add(lnc);
-		}
-		return llnc;	
-	}
-	
-	
 	public void printBinaryTree2(){ 
 		List<List<Node>> ll = levelOrder2();
 		List<Node> l = null; 
 		int h = height();				
 		for(int i=1; i<=h; i++){
-			//节点�?  �?始地�?
+			//第i行  节点偏移地址
 			int lineStart = pow2(h-i+1)-2;
-			//每个节点的偏移地�?
+			//每个节点的间隔
 			int offset = pow2(h-i+2)-1;
 			//该节点到左子节点或右子节点的长度
 			int brackets = pow2(h-i);
@@ -441,19 +306,19 @@ public class BST<Key extends Comparable<Key>, Value> {
 				}	
 				printFormat(offset, spaceFormat);		
 			}
-			//�?后一行不�?要绘�?
+			//最后一行不需要绘出
 			if(i>=h)
 				break;
 			System.out.println();
-			//横线部分行开始地�?
+			//横线部分行开始地址
 			int lineCrossStart = pow2(h-i)-2;
 			printFormat(lineCrossStart, spaceFormat);
 			for(int j=0; j<l.size(); j++){
 				//System.out.println(l.get(j).key);
 				if(!l.get(j).key.equals(specialChar) && (l.get(j).left!=null || l.get(j).right!=null)){
-					//每个元素下一行横线部分长�?
+					//每个元素下一行横线部分长度
 					printFormat(brackets*2+1, crossFormat);
-					//横线部分 间隔  即下�?行的节点的间�?
+					//横线部分 间隔  即下一行的节点的间隔
 					printFormat(pow2(h-i+2-1)-1, spaceFormat);
 				}else{
 					printFormat(brackets*2+1, spaceFormat);

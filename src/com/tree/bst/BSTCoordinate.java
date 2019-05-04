@@ -9,67 +9,19 @@ import java.util.Queue;
 public class BSTCoordinate<Key extends Comparable<Key>, Value> {
 	
 	public class Node{
-		private Key key;
-		private Value value;
-		private Node left, right;
-		private int N;	
-		private int x;
-		private int y;
+		public Key key;
+		public Value value;
+		public Node left, right;
+		public int N;	
+		public int x;
+		public int y;
 		public Node(Key key, Value value, int N){
 			this.key = key;
 			this.value = value;
 			this.N = N;
 		}
-		public Key getKey(){
-			return this.key;
-		}
-		public Node getLeft(){
-			return this.left;
-		}
-		public Node getRight(){
-			return this.right;
-		}
-		public int getX() {
-			return x;
-		}
-		public void setX(int x) {
-			this.x = x;
-		}
-		public int getY() {
-			return y;
-		}
-		public void setY(int y) {
-			this.y = y;
-		}
-		@Override
-		public String toString() {
-			return "Node [key=" + key + "]";
-		}
 	}
-	
-	//带坐标的节点
-	public class NodeCoordinate{
-		Node node;
-		int x;
-		int y;
-		public NodeCoordinate(Node n, int x, int y){
-			this.node = n;
-			this.x = x;
-			this.y = y;
-		}
-		public Node getNode(){
-			return this.node;
-		}
-		
-		public int getX(){
-			return this.x;
-		}
-		
-		public int getY(){
-			return this.y;
-		}
-	}
-	
+
 	private Node root;
 	
 	public int size(){
@@ -138,7 +90,6 @@ public class BSTCoordinate<Key extends Comparable<Key>, Value> {
 		return min(x.left);
 	}
 	
-	//小于等于key的最大�??
 	public Node floor(Key key){
 		if(root == null) 
 			return null;
@@ -158,7 +109,6 @@ public class BSTCoordinate<Key extends Comparable<Key>, Value> {
 		else return x;						
 	}
 	
-	//大于等于key的最小�??
 	public Node ceiling(Key key){
 		if(root==null) return null;
 		return ceiling(root, key);
@@ -279,47 +229,7 @@ public class BSTCoordinate<Key extends Comparable<Key>, Value> {
 	
 	private String spaceFormat = " ";
 	private String crossFormat = "-";
-	//private String specialChar = "#";
 	public static String specialChar = "#";
-	
-	public void printBinaryTree(){ 
-		List<List<Key>> ll = levelOrder();
-		List<Key> l = null;
-		int h = height();				
-		for(int i=1; i<=h; i++){
-			//节点�?  �?始地�?
-			int lineStart = pow2(h-i+1)-2;
-			//每个节点的偏移地�?
-			int offset = pow2(h-i+2)-1;
-			//该节点的左右节点的长度�??
-			int brackets = pow2(h-i);
-			//System.out.println("linenum = " + i + " start = " + lineStart + " offset = " + offset + " brackets = " + brackets);
-			printFormat(lineStart, spaceFormat);
-			l = ll.get(i-1);
-			for(int j=0; j<l.size(); j++){
-				//if(!l.get(j).equals("#")){
-					System.out.print(l.get(j));
-				//}	
-				printFormat(offset, spaceFormat);		
-			}
-			//�?后一行不�?要绘�?
-			if(i>=h)
-				break;
-			System.out.println();
-			//横线部分行开始地�?
-			int lineCrossStart = pow2(h-i)-2;
-			printFormat(lineCrossStart, spaceFormat);
-			for(int j=0; j<l.size(); j++){
-				if(!l.get(j).equals(specialChar)){
-					//每个元素下一行横线部分长�?
-					printFormat(brackets*2+1, crossFormat);
-					//横线部分 间隔  即下�?行的节点的间�?
-					printFormat(pow2(h-i+2-1)-1, spaceFormat);
-				}				
-			}
-			System.out.println();
-		}		
-	}
 	
 	public int pow2(int n){
 		return (int) Math.pow(2, n);
@@ -342,47 +252,9 @@ public class BSTCoordinate<Key extends Comparable<Key>, Value> {
 		if(x.left==null&&x.right==null) return 1;
 		return 1+Math.max(height(x.left), height(x.right));
 	}
-	
-	public List<List<Key>> levelOrder(){
-		if(root==null) return null;
-		List<List<Key>> ll = new ArrayList<>();
-		Queue<Node> q = new LinkedList<>();
-		q.add(root);
-		int h = height();
-		int depth = 1;
-		while(q.size()>0){
-			int s = q.size();
-			//System.out.println("size = " + q.size());
-			//System.out.println("q = " + q);
-			List<Key> lk = new ArrayList<>();
-			while(s>0){
-				Node tmp = q.poll();
-				lk.add(tmp.key);
-				if(tmp.left!=null){
-					q.add(tmp.left);
-				}else{
-					q.add(new Node((Key)specialChar, (Value)specialChar, 1));
-				}
-				if(tmp.right!=null){
-					q.add(tmp.right);
-				}else{
-					q.add(new Node((Key)specialChar, (Value)specialChar, 1));
-				}
-				s--;
-			}
-			ll.add(lk);
-			if(depth>h-1)
-				break;
-			depth++;			
-		}
-		for(List<Key> t : ll){
-			System.out.println(t);
-		}
-		return ll;
-	}
-	
+
 	public List<List<Node>> levelOrder2(){
-		if(root==null) return null;
+		if(root == null) return null;
 		List<List<Node>> ll = new ArrayList<>();
 		Queue<Node> q = new LinkedList<>();
 		q.add(root);
@@ -411,33 +283,7 @@ public class BSTCoordinate<Key extends Comparable<Key>, Value> {
 				break;
 			depth++;			
 		}
-//		for(List<Node> t : ll){
-//			for(Node n : t){
-//				System.out.print(n.key + ",");
-//			}
-//			System.out.println();
-//		}
 		return ll;
-	}
-	
-	public List<List<NodeCoordinate>> calculateNodeCoordinate(){
-		int h = height();	
-		//int ymax = 2*h-1;	
-		List<List<Node>> ll = levelOrder2(); 
-		List<List<NodeCoordinate>> llnc = new ArrayList<>();
-		for(int i=1; i<=h; i++){
-			List<NodeCoordinate> lnc = new ArrayList<>();
-			int lineStart = pow2(h-i+1)-2;
-			int offset = pow2(h-i+2);
-			int t = lineStart;
-			for(int j=0; j<ll.get(i-1).size(); j++){									
-				NodeCoordinate nc = new NodeCoordinate(ll.get(i-1).get(j), t, i);
-				lnc.add(nc);
-				t = t + offset;
-			}
-			llnc.add(lnc);
-		}
-		return llnc;	
 	}
 	
 	public List<List<Node>> calculateNodeCoordinate2(){
@@ -449,15 +295,13 @@ public class BSTCoordinate<Key extends Comparable<Key>, Value> {
 			int t = lineStart;
 			for(int j=0; j<ll.get(i-1).size(); j++){
 				Node n = ll.get(i-1).get(j);
-				n.setX(t);
-				n.setY(i);
-				//NodeCoordinate nc = new NodeCoordinate(ll.get(i-1).get(j), t, i);
+				n.x = t;
+				n.y = i;
 				t = t + offset;
 			}
 		}
 		return ll;	
 	}
-	
 	
 	public void printBinaryTree2(){ 
 		List<List<Node>> ll = levelOrder2();
