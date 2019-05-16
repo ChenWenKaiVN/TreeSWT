@@ -39,6 +39,7 @@ public class TreeMain extends ApplicationWindow {
 	
 	private Group group;
 	
+	//gc对象在事件中使用
 	private GC gc = null;
 	private int screenWidth = 0;
 	private int screenHeight = 0;
