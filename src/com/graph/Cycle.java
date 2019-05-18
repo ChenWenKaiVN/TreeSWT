@@ -1,6 +1,7 @@
 package com.graph;
 
-import java.util.Arrays;
+import com.swt.GraphPoint;
+import com.swt.GraphUtils;
 
 //无向图  深度优先搜索  是否有环
 public class Cycle {
@@ -27,29 +28,31 @@ public class Cycle {
 	private void dfs(Graph g, int s, int u) {
 		marked[s] = true;
 		for(int v : g.adj(s)){
-			//搜索节点s的所有临接节点v 如果没有标记过，继续dfs
-			//因为本次搜索起点从u开始，如果被标记节点不是v, 则说明有环
-			//如果v已经被标记过，则v==u, 则说明有环
+			System.out.println(s + " " + u + " " + v + " " + marked[v]);
+			//搜索节点s的所有临接节点v 如果v没有标记过，继续dfs
 			if(!marked[v]){
 				dfs(g, v, s);
-			}else if(v != u){
+			}
+			//u保存访问v的上一个节点
+			//如果已经标记过,如果此时v==u 说明v直接相连于u,即u-->v 此时并没有环
+			else if(v != u){
 				hasCycle = true;
+				System.out.println("end");
 				return;
 			}
 		}
 	}
 	
 	public static void main(String[] args) {
-		int V = 13;
-		int E = 13;
-		int[] vr = new int[]{0,4,0,9,6,5,0,11,9,0,7,9,3};
-		int[] wr = new int[]{5,3,1,12,4,4,2,12,10,6,8,11,3};
-		Graph g = new Graph(V, E, vr, wr); 
+//		int V = 13;
+//		int E = 13;
+//		int[] vr = new int[]{0,4,0,9,6,5,0,11,9,0,7,9,3};
+//		int[] wr = new int[]{5,3,1,12,4,4,2,12,10,6,8,11,3};
+//		Graph g = new Graph(V, E, vr, wr); 
+		GraphPoint gp = GraphUtils.getGraphPointG2();
+		Graph g = gp.getG();
 		System.out.println(g.toString());
 		Cycle c = new Cycle(g);
 		System.out.println(c.hasCycle());
 	}
-	
-	
-
 }

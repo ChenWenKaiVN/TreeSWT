@@ -28,12 +28,14 @@ public class TwoColor {
 	private void dfs(Graph g, int s) {
 		marked[s] = true;
 		for(int v : g.adj(s)){
-			//搜索节点s的所有临接节点v 如果没有标记过，继续dfs
-			//因为本次搜索起点从u开始，如果被标记节点不是v, 则说明有环
+			//此时访问s的临接顶点v
 			if(!marked[v]){
+				//将v颜色设置为与s相反
 				color[v] = !color[s];
 				dfs(g, v);
-			}else if(color[v]==color[s]){
+			}
+			//如果已经标记过，并且颜色相同，则说明图不具有二分性
+			else if(color[v]==color[s]){
 				isTwoColorable = false;
 				return;
 			}
@@ -46,11 +48,6 @@ public class TwoColor {
 		int E = 14;
 		int[] vr = new int[]{0,0,0,0,1,3,4,4,6,7,8,9,9,10};
 		int[] wr = new int[]{1,2,5,6,3,5,5,6,7,8,10,10,11,12};
-		
-		
-		
-		
-		
 //		int V = 13;
 //		int E = 13;
 //		int[] vr = new int[]{0,4,0,9,6,5,0,11,9,0,7,9,3};

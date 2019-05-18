@@ -1,8 +1,14 @@
 package com.graph;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
+
+import com.swt.GraphPoint;
+import com.swt.GraphUtils;
+import com.swt.PointG;
 
 //广度优先搜索  无向图  单点最短路径
 public class BreadthFirstPaths {
@@ -52,17 +58,51 @@ public class BreadthFirstPaths {
 		return s;
 	}
 	
+	public List<Integer> pathTo2(int v){
+		if(!hasPathTo(v)) return null;
+		//利用栈倒序存储
+		Stack<Integer> s = new Stack<>();
+		//由最终节点向起始节点寻找  edgeTo[x]表示谁指向x
+		for(int x=v; x!=this.s; x = edgeTo[x]){
+			s.push(x);
+		}
+		s.push(this.s);
+		List<Integer> l = new ArrayList<>();
+		while(!s.isEmpty()){
+			l.add(s.pop());
+		}
+		return l;
+	}
+	
+	public String pathTo3(int v){
+		if(!hasPathTo(v)) return null;
+		List<Integer> l = pathTo2(v);
+		StringBuilder sb = new StringBuilder();
+		sb.append(s + ":" + v + "    ");
+		for(int i=0; i<l.size(); i++){
+			sb.append(l.get(i));
+			if(i!=l.size()-1){
+				sb.append("-->");
+			}
+		}
+		return sb.toString();
+	}
+	
+	
+	
 	public static void main(String[] args) {
-		int V = 6;
-		int E = 8;
-		int[] vr = new int[]{0,2,2,1,0,3,3,0};
-		int[] wr = new int[]{5,4,3,2,1,4,5,2};
-		Graph g = new Graph(V, E, vr, wr);
+//		int V = 6;
+//		int E = 8;
+//		int[] vr = new int[]{0,2,2,1,0,3,3,0};
+//		int[] wr = new int[]{5,4,3,2,1,4,5,2};
+		GraphPoint gp = GraphUtils.getGraphPointG2();
+		List<PointG> lp = gp.getLp();
+		Graph g = gp.getG();
 		System.out.println(g.toString());
 		BreadthFirstPaths bfp = new BreadthFirstPaths(g, 0);
 		System.out.println();
 		System.out.println(bfp.hasPathTo(4));
-		System.out.println(bfp.pathTo(4));
+		System.out.println(bfp.pathTo3(4));
 		for(int i=0; i<bfp.edgeTo.length; i++){
 			System.out.println(i + " " + bfp.edgeTo[i]);
 		}

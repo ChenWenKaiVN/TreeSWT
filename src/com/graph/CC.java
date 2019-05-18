@@ -32,7 +32,7 @@ public class CC {
 		}
 	}
 
-	public boolean connected(int v, int w){
+	public boolean connected(int v, int w){ 
 		return id[v] == id[w];
 	}
 	
@@ -42,6 +42,10 @@ public class CC {
 	
 	public int id(int v){
 		return id[v];
+	}
+	
+	public int[] getId(){
+		return this.id;
 	}
 	
 	
